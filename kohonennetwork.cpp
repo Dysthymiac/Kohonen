@@ -54,16 +54,20 @@ void KohonenNetwork::learnStep(int step, const std::vector<double> &data, int it
         }
 
     double neighbourhoodRadiusSqr = Utils::sqr(mapRadius * exp(-(double)step/timeConstant));
-
+    bool flag = rand() % 2;
     for(size_t y = 0; y < rows(); ++y)
         for(size_t x = 0; x < cols(); ++x)
         {
-            double distSqr = (0.7 + 0.6 * (double)rand()/RAND_MAX) * Utils::distSqr(x,y, bestX, bestY);
+            double distSqr = Utils::distSqr(x,y, bestX, bestY);
             if (distSqr < neighbourhoodRadiusSqr)
             {
-                //double influence = exp(-(distSqr) / (2*neighbourhoodRadiusSqr));
-
-                double influence = 10*((distSqr) / (2*neighbourhoodRadiusSqr));
+                //influence = exp(-(distSqr) / (2*neighbourhoodRadiusSqr));
+                double influence;
+                if(flag)
+                    influence = 10 - 10*Utils::sqr((distSqr) / (2*neighbourhoodRadiusSqr));
+                else
+                    influence = 10*Utils::sqr((distSqr) / (2*neighbourhoodRadiusSqr));
+                //double influence = 10*((distSqr) / (2*neighbourhoodRadiusSqr));
                 for(size_t j = 0; j < input(); ++j)
                     weights[y][x][j] += influence * lr * (data[j]-weights[y][x][j]);
             }
